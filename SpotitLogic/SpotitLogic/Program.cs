@@ -9,20 +9,18 @@ namespace SymbolRepeat
 {
     class Program
     {
-        private static List<char> _availableSymbols;
-        private static int _availableSymbolCount;
         private static int _numPerCard;
-        private static List<Dictionary<char, bool>> _cardsSoFar;
+        private static List<Dictionary<int, bool>> _cardsSoFar;
         private static List<int> _index;
+        private static int _numSymbols; 
 
         static void Main(string[] args)
         {
-            _availableSymbols = new List<char>() { 'A', 'B', 'C', 'D', 'E' };
-            _availableSymbolCount = _availableSymbols.Count;
+            _numPerCard = 6;
+            // http://www.pleacher.com/mp/mlessons/stat/spotit.html
+            _numSymbols = _numPerCard * _numPerCard - _numPerCard + 1; 
 
-            _numPerCard = 2;
-
-            _cardsSoFar = new List<Dictionary<char, bool>>();
+            _cardsSoFar = new List<Dictionary<int, bool>>();
 
             _index = new List<int>();
             while (_index.Count < _numPerCard)
@@ -34,18 +32,20 @@ namespace SymbolRepeat
             {
                 do
                 {
-                    // Console.WriteLine("Consider: "+Dumpit());
+                    //Console.Write("Consider: "+Dumpit());
                     if (IsValidSymbol())
                     {
-                        // Console.WriteLine("Valid"); 
+                        //Console.Write(" Valid"); 
 
                         // must have exactly one symbol matching with every pervious card so far
                         if (IsANewCardWithExactlyOneMatchWithAll())
                         {
                             AddNewCardToPile();
-                            Console.WriteLine("Added " + Dumpit());
+                            // Console.Write(" ADDED");
+                            Console.WriteLine(Dumpit());
                         }
                     }
+//                    Console.WriteLine();
                 } while (AdvanceIndex());
             }
             finally
@@ -57,36 +57,43 @@ namespace SymbolRepeat
 
         private static bool IsANewCardWithExactlyOneMatchWithAll()
         {
-            var arewegood = true;
-
             foreach (var card in _cardsSoFar)
             {
                 var numberOfMatches = 0;
                 foreach (var i in _index)
                 {
-                    var ch = _availableSymbols[i];
-                    if (card.ContainsKey(ch)) numberOfMatches++;
+                    if (card.ContainsKey(i)) numberOfMatches++;
                     if (numberOfMatches > 1)
                     {
-                        // Console.WriteLine("** too many matches with "+String.Join("",card.Keys));
+  //                      Console.Write($" NO: {Dumpit(card)}={numberOfMatches}");
                         return false;
                     }
                 }
                 if (numberOfMatches == 0)
                 {
-                    // Console.WriteLine("** 0 matches with "+String.Join("", card.Keys));
+    //                Console.Write($" NO: 0 matches with {Dumpit(card)}");
                     return false;
                 }
             }
-            return arewegood;
+            return true;
+        }
+
+        private static string  Dumpit(Dictionary<int, bool> card)
+        {
+            var sb = new StringBuilder();
+            foreach (var i in card.Keys)
+            {
+                sb.Append(Convert.ToChar('A' +i));
+            }
+            return sb.ToString(); 
         }
 
         private static void AddNewCardToPile()
         {
-            var matchyness = new Dictionary<char, bool>();
+            var matchyness = new Dictionary<int, bool>();
             foreach (var i in _index)
             {
-                matchyness[_availableSymbols[i]] = true;
+                matchyness[i] = true;
             }
             _cardsSoFar.Add(matchyness);
         }
@@ -96,7 +103,7 @@ namespace SymbolRepeat
             var sb = new StringBuilder();
             foreach (var x in _index)
             {
-                sb.Append(_availableSymbols[x]);
+                sb.Append(Convert.ToChar('A'+x));
             }
             return sb.ToString();
         }
@@ -107,7 +114,7 @@ namespace SymbolRepeat
             while (x >= 0)
             {
                 _index[x]++;
-                if (_index[x] >= _availableSymbolCount)
+                if (_index[x] >= _numSymbols)
                 {
                     _index[x] = 0;
                     x--;
