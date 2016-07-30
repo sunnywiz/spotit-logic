@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SymbolRepeat
@@ -78,15 +79,15 @@ namespace SymbolRepeat
             return true;
         }
 
-        private static string  Dumpit(Dictionary<int, bool> card)
-        {
-            var sb = new StringBuilder();
-            foreach (var i in card.Keys)
-            {
-                sb.Append(Convert.ToChar('A' +i));
-            }
-            return sb.ToString(); 
-        }
+        //private static string  Dumpit(Dictionary<int, bool> card)
+        //{
+        //    var sb = new StringBuilder();
+        //    foreach (var i in card.Keys)
+        //    {
+        //        sb.Append(Convert.ToChar('A' +i));
+        //    }
+        //    return sb.ToString(); 
+        //}
 
         private static void AddNewCardToPile()
         {
@@ -127,13 +128,14 @@ namespace SymbolRepeat
             return false;
         }
 
+
         private static bool IsValidSymbol()
         {
-            Dictionary<int, bool> seen = new Dictionary<int, bool>();
+            var _seen = new bool[_numSymbols];
             foreach (var x in _index)
             {
-                if (seen.ContainsKey(x)) return false;
-                seen[x] = true;
+                if (_seen[x]) return false;
+                _seen[x] = true;
             }
             return true;
         }
